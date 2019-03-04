@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Create Category</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+	
+</head>
+<body>
+	<h1>Create category</h1>
+
+	<table>
+		<tr>
+			<td>Name</td>
+			<td><input id="name" type="text" name="Name" required></td>
+		</tr>
+		<tr>
+			<td>User_id</td>
+			<td><input id="user_id" type="number" name="Password" required></td>
+		</tr>
+
+	</table>
+	<button onclick="createCategory();">Create</button>
+	
+</body>
+
+	<script>
+		
+		function createCategory() {
+
+			var name = document.getElementById('name').value;
+			var user_id = document.getElementById('user_id').value;
+			var authorization = sessionStorage.getItem('data');
+			console.log(authorization);
+
+			$.ajax({
+
+				url: 'http://localhost:80/GPASS/public/index.php/api/category',
+
+				headers:{
+					Authorization: authorization
+				},
+
+			 	data: {
+			 		name: name,		//Document es el documento con el que trabajamos, se le llama DOM a todo lo de dentro del documento.
+					user_id: user_id,
+				},
+
+			 	type: 'POST',
+			 	
+			 	dataType : 'json',
+
+				success : function(json) {
+			 		console.log('The category has created on correctly');
+			 	},
+
+			 	error : function (xhr, status) {
+			 		console.log('Error creating category');
+			 	},
+
+			 	complete : function(xhr, status) {
+					console.log('Complete petition');
+			 	}
+			
+			 });
+		}
+	</script>
+
+
+</html>

@@ -8,8 +8,7 @@ class Category extends Model
 {
 
 	protected $table = 'categories';
-	protected $fillable = ['name','user_id'];      //Atributos asignados en masa
-    public $timestamps = false;     //Con esto quitamos el error de SQL
+	protected $fillable = ['name'];
 
     public function password()
     {

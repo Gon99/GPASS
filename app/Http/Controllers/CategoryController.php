@@ -17,7 +17,23 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $header = getallheaders();
+        if (!empty($header['Authorization'])) {
+            $userLogged = JWT::decode($header['Authorization'], $this->key, array('HS256'));
+            $userCategories = Category::where('user_id', $userLogged->id)->get();
+            if (count($userCategories) > 0) {
+                return response()->json([
+                    'MESSAGE' => $userCategories], 200
+                );
+            }
+            return response()->json([
+                'MESSAGE' => 'Dont have any category created yet'], 404
+            );
+        }else{
+            return response()->json([
+                'MESSAGE' => 'You dont have enough permission'], 403
+            );
+        }
     }
 
     /**
@@ -38,33 +54,36 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $headers = getallheaders();
-        $token = $headers['Authorization'];
-        $key = '7kvP3yy3b4SGpVz6uSeSBhBEDtGzPb2n';
+        $header = getallheaders();
 
-        if (isset($_POST['Authorization']))
-        {
-            return response()->json([
-                'ERROR' => 'Invalid Token', 401
-            ]);  
-              
-        } else
-        {
-            $key = '7kvP3yy3b4SGpVz6uSeSBhBEDtGzPb2n';
-            $decodedToken = JWT::decode($token, $key, array('HS256'));
-            var_dump($decodedToken);
-            exit();
-
+        if (!empty($header['Authorization'])) {
+            $userLogged = JWT::decode($header['Authorization'], $this->key, array('HS256'));
+            if (empty($request->name)) {
+                return response()->json([
+                    'MESSAGE' => 'You have to put a name for your category'], 400
+                );
+            }
+            $repeatedCategory = Category::where('name', $request->name)->first();
+            if (!is_null($repeatedCategory) && $repeatedCategory->user_id == $userLogged->id) {
+                return response()->json([
+                    'MESSAGE' => 'The specified category name already exists'], 400
+                );
+            }
             $category = new Category();
 
-            $category->name = $request->name;
-            $category->user_id = $request->user_id;
-
+            $category->name = str_replace(' ', '', $request->name);
+            $category->user_id = $userLogged->id;
             $category->save();
-            
+
+            return response()->json([
+                'MESSAGE' => 'The category has been created correctly'], 200
+            );
+        }else{
+            return response()->json([
+                'MESSAGE' => 'You dont have enough permission'], 403
+            );
         }
-        
-        
+
     }
 
     /**
@@ -75,12 +94,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        $categories = DB::table('categories')->where('user_id', $category->user_id)->get();
-
-        foreach ($categories as $categories => $category) {
-            var_dump($value->name);
-        }
-
+        //
     }
 
     /**
@@ -101,9 +115,47 @@ class CategoryController extends Controller
      * @param  \App\GPASS  $gPASS
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, GPASS $gPASS)
+    public function update(Request $request, Category $category)
     {
-        //
+        $header = getallheaders();
+        if (!empty($header['Authorization'])) {
+            $userLogged = JWT::decode($header['Authorization'], $this->key, array('HS256'));
+            if (empty($request->name)) {
+                return response()->json([
+                    'MESSAGE' => 'You have to change the category name'], 400
+                );
+            }
+            $userCategories = Category::where('user_id', $userLogged->id)->get();
+            if (count($userCategories) == 0) {
+                return response()->json([
+                    'MESSAGE' => 'Dont have enough permission'], 403
+                );
+            }
+            foreach ($userCategories as $key => $value) {
+                if ($value->name == $request->name) {
+                    return response()->json([
+                        'MESSAGE' => 'The specified category name is already created'], 400
+                    );
+                }
+                if ($value->user_id == $userLogged->id) {
+                    $category->name = str_replace(' ', '', $request->name);
+                    $category->save();
+                    return response()->json([
+                        'MESSAGE' => 'The category has been updated correctly'], 200
+                    );
+                }else{
+                    return response()->json([
+                        'MESSAGE' => 'Dont have enough permission'], 403
+                    );
+                }
+            }
+            
+            
+        }else{
+            return response()->json([
+                'MESSAGE' => 'Dont have enough permission'], 403
+            );
+        }
     }
 
     /**
@@ -112,8 +164,34 @@ class CategoryController extends Controller
      * @param  \App\GPASS  $gPASS
      * @return \Illuminate\Http\Response
      */
-    public function destroy(GPASS $gPASS)
+    public function destroy(Category $category)
     {
-        //
+        $header = getallheaders();
+        if (!empty($header['Authorization'])) {
+            $userLogged = JWT::decode($header['Authorization'], $this->key, array('HS256'));
+            $userCategories = Category::where('user_id', $userLogged->id)->get();
+            if (count($userCategories) == 0) {
+                return response()->json([
+                    'MESSAGE' => 'Dont have enough permission'], 403
+                );
+            }
+            foreach ($userCategories as $key => $value) {
+
+                if ($value->user_id == $userLogged->id) {
+                    $category->delete();
+                    return response()->json([
+                        'MESSAGE' => 'The category has been deleted correctly'], 200
+                    );
+                }else{
+                    return response()->json([
+                        'MESSAGE' => 'Dont have enough permission'], 403
+                    );
+                }
+            }
+        }else{
+            return response()->json([
+                'MESSAGE' => 'Dont have enough permission'], 403
+            );
+        }
     }
 }

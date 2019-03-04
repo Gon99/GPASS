@@ -19,7 +19,15 @@ class CreateUsersTable extends Migration
             $table->string('email', 100)->unique()->index();
             $table->string('password');
             $table->integer('role_id');
+            $table->timestamps();
         });
+
+        DB::table('users')->insert(
+            ['name' => 'admin123',
+            'email' => 'adminuser@gmail.com',
+            'password' => encrypt('admin123'),
+            'role_id' => 1]
+        );
     }
 
     /**

@@ -40,38 +40,44 @@ class UserController extends Controller
 
         if (empty($request->name) || empty($request->password) || empty($request->email)) {
             return response()->json([
-                'ERROR' => 'Some fields are null'
-            ]);
+                'MESSAGE' => 'Some fields are null'], 400
+            );
         } else {
             $user = new User();
 
             $user->name = str_replace(' ', '', $request->name);
-            $user->email = $request->email;
+            $repeatedEmail = User::where('email', $request->email)->first();
 
-            /*if ($user->email != $_POST['email']) {
-                var_dump($user->email);
-                var_dump($_POST['email']);
-                exit();
-            
-            }else
-            {
+            if ($repeatedEmail != true) {
+                if (!strpos($request->email, "@") || !strpos($request->email, ".")) 
+                {
+                    return response()->json([
+                        'MESSAGE' => 'The email has not been written correctly'], 406
+                    );
+                } else{
+                    $user->email = $request->email;
+                }
+            }else{
                 return response()->json([
-                    'ERROR' => 'The email is in use', 400 
-                ]);
-            }*/
+                    'MESSAGE' => 'The email is in use'], 400
+                );
+            }
         
             if (strlen($request->password) > 7)
             {
-                $user->password = $request->password;
+                $user->password = encrypt($request->password);
             } else 
             {
                 return response()->json([
-                    'ERROR' => 'The password must have more than seven characters', 400.7
-                ]);
+                    'MESSAGE' => 'The password must have more than seven characters'], 400
+                );
             }
             $user->role_id = 2;
-
             $user->save();
+
+            return response()->json([
+                'MESSAGE' => 'The user has been created correctly'], 200
+            );
         }
         
     }

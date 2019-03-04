@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Peticion Jquery</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+	
+</head>
+<body>
+	<h1>Registrar usuario</h1>
+
+	<table>
+		<tr>
+			<td>Name</td>
+			<td><input id="name" type="text" name="Name" required></td>
+		</tr>
+		<tr>
+			<td>Email</td>
+			<td><input id="email" type="text" name="Email" required></td>
+		</tr>
+		<tr>
+			<td>Password</td>
+			<td><input id="password" type="password" name="Password" required></td>
+		</tr>
+
+	</table>
+	<button onclick="registrar();">Registrar</button>
+	
+
+</body>
+
+<script>
+	
+		function registrar() {
+
+			var name = document.getElementById('name').value;
+			var email = document.getElementById('email').value;
+			var password = document.getElementById('password').value;
+
+			$.ajax({
+
+				url: 'http://localhost:80/GPASS/public/index.php/api/user',
+
+			 	data: {
+			 		name: name,		//Document es el documento con el que trabajamos, se le llama DOM a todo lo de dentro del documento.
+					password: password,
+			 		email: email,
+				},
+
+			 	type: 'POST',
+			 	
+			 	dataType : 'json',
+
+				success : function(json) {
+			 		if (json.status == 'success') 
+			 		{
+			 			if (json.status == 'success') 
+			 			{
+			 				console.log('The user has registered correctly');
+			 			} else
+			 			{
+			 				console.log('There was an error on the register');
+			 			}
+			 		}
+			 	},
+
+			 	complete : function(xhr, status) {
+					console.log('Petition complete');
+			 	}
+			
+			 });
+		}
+
+	</script>
+
+</html>
+
+
+
+

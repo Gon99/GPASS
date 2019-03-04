@@ -16,72 +16,35 @@ class LoginController extends Controller
 
 	public function login()
     {
-    	
-        $key = '7kvP3yy3b4SGpVz6uSeSBhBEDtGzPb2n';
-        $user = User::where('email', $_POST['email'])->first();       //En vez de ->get podemos poner ->first ya que el email es único te devuelve ese objeto(user) con ese email
-        if (empty($_POST['email']) or empty($_POST['password'])) {
-    		return response()->json([
-    			'ERROR' => 'The fields are empty', 400
-    		]);
-    	}
+        $user = User::where('email', $_POST['email'])->first();
 
-        if ($user->password == $_POST['password'] && $user->email == $_POST['email']) 
+        if (empty($_POST['email']) || empty($_POST['password'])) {
+    		return response()->json([
+    			'MESSAGE' => 'Some fields are empty'], 400
+            );
+    	}
+        
+        if (!is_null($user)) 
         {
-            $tokenParams = [        //Meter los datos que identifican al usuario
+            if (decrypt($user->password) != $_POST['password']) {
+                return response()->json([
+                    'MESSAGE' => 'Wrong password'], 400
+                );
+            }
+            $tokenParams = [
+                'id' => $user->id,
                 'password' => $_POST['password'],
                 'email' => $_POST['email'],
-                'random' => time()
             ];
-            $token = JWT::encode($tokenParams, $key);
+            $token = JWT::encode($tokenParams, $this->key);
             return response()->json([
-                'token' => $token,
+                'MESSAGE' => $token,
             ]);
         }else 
         {
             return response()->json([
-                'ERROR' => 'Invalid email or password', 400
-            ]);
+                'MESSAGE' => 'Wrong email'], 400
+            );
         }
     }
-
-    /*public function userToken()
-    {
-
-    	$key = '7kvP3yy3b4SGpVz6uSeSBhBEDtGzPb2n';
-    	$header = getallheaders();
-
-    	var_dump($header);
-    	exit();
-
-    	if (isset($header['Postman-Token'])) 
-    	{
-    		$token = $header['Postman-Token'];
-			
-			var_dump($token);
-    		exit();
-
-    		$decodedToken = JWT::decode($token, $key, array('HS256'));
-
-    		var_dump($decodedToken);
-    		exit();
-    	} else
-    	{
-    		var_dump("en el else");
-    		exit();
-    	}
-    	
-    }
-
-    public function userLogged() 
-    {
-    	$header = getallheaders();
-
-    	foreach ($header as $headers => $value) {
-    		return response()->json([
-    			var_dump($headers)
-    		]);
-    	}
-
-    	exit();
-    }*/
 }

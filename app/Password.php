@@ -9,7 +9,6 @@ class Password extends Model
 
 	protected $table = 'passwords';
 	protected $fillable = ['title', 'password','user_id','category_id'];
-    public $timestamps = false;
 
     public function users()
     {
