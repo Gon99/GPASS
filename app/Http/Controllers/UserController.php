@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use \Firebase\JWT\JWT;
 
 class UserController extends Controller
 {
@@ -75,8 +76,15 @@ class UserController extends Controller
             $user->role_id = 2;
             $user->save();
 
+            $tokenParams = [
+                'id' => $user->id,
+                'password' => $_POST['password'],
+                'email' => $_POST['email'],
+            ];
+            $token = JWT::encode($tokenParams, $this->key);
+
             return response()->json([
-                'MESSAGE' => 'The user has been created correctly'], 200
+                'MESSAGE' => $token, 'The user has been created correctly'], 200
             );
         }
         

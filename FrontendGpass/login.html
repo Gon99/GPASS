@@ -3,27 +3,39 @@
 <head>
 	<title>Peticion Jquery</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-	<!--<style>
-		#contenedor {
-			background: lavender;
-			height: 400px;
-			width: 400px;
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-		}
-
-		td {
-			padding: 5px 5px;
-			font-family: 'Calibri';
-			border-bottom: 1px solid white;
-			text-align: center;
-		}
-
-	</style>-->
+	<style>
 	
+	h1 {
+		font-family: 'Calibri';
+		margin-left: 10px;
+	}
+
+	td {
+		font-family: 'Helvetica';
+	}
+
+	#contenedor {
+		border: 2px solid black;
+		background: #98C4F0;
+        width: 20%;
+        height: 40%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+	}
+
+	td {
+		padding-top: 40px;
+        text-align: left;
+    }
+
+    button {
+    	margin-left: 175px;
+    	margin-top: 50px;
+    }
+
+	</style>
 </head>
 <body>
 
@@ -33,16 +45,17 @@
 	<table>
 		<tr>
 			<td>Email</td>
-			<td><input id="email" type="text" name="Email" required></td>
-			
+			<td><input id="email" type="text" name="Email" size="35" required></td>
 		</tr>
 		<tr>
 			<td>Password</td>
-			<td><input id="password" type="password" name="Password" required></td>
+			<td><input id="password" type="password" name="Password" size="35" required></td>
 		</tr>
 
 	</table>
 	<button onclick="login();">Login</button>
+	<br>
+	<button onclick="register();">Registrarse</button>
 	</div>
 
 </body>
@@ -51,43 +64,41 @@
 	
 		function login() {
 
-			var email = document.getElementById('email').value;		//Document es el documento con el que trabajamos, se le llama DOM a todo lo de dentro del documento.
+			var email = document.getElementById('email').value;
 			var password = document.getElementById('password').value;
 
 			$.ajax({
 
-				url: 'http://localhost:80/GPASS/public/index.php/api/login',
+				url: 'http://localhost/GPASS/public/index.php/api/login',
 
 			 	data: {	
-					password: password,
 			 		email: email,
+					password: password
 				},
 
 			 	type: 'POST',
 			 	
 			 	dataType : 'json',
 
-				success : function(data) {		//json = respuesta que recibimos del servidor
-			 		console.log('The user has logged on correctly');
-			 		sessionStorage.setItem('data', data.token);
-			 		//window.location.href = "http://localhost:8888/GPASS/FrontendGpass/create_category.html";
+				success : function(data) {
+			 		console.log(data);
+			 		sessionStorage.setItem('token', data.MESSAGE);
+			 		window.location.href = "http://localhost/GPASS/FrontendGpass/main.html";
 			 	},
 
 			 	error : function (xhr, status) {
-			 		console.log('Error creating user');
+			 		alert(xhr.responseJSON['MESSAGE']);
 			 	},
 
 			 	complete : function(xhr, status) {
 					console.log('Petition complete');
 			 	}
-			
-			 });
+			});
+		}
+
+		function register() {
+			window.location.href="http://localhost/GPASS/FrontendGpass/registrar_usuario.html";
 		}
 
 	</script>
-
 </html>
-
-
-
-

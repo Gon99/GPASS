@@ -59,27 +59,27 @@
 	<h1>Main Page Gpass</h1>
 
 	<nav>
-		<a href="http://localhost/GPASS/FrontendGpass/create_password.html">Crear contrasenia</a>
-		<a href="http://localhost/GPASS/FrontendGpass/main_categories.html">Lista Categorias</a>
+		<!--<a href="http://localhost/GPASS/FrontendGpass/create_category.html">Crear categoria</a>-->
+		<a href="http://localhost/GPASS/FrontendGpass/create_category.html">Crear categoria</a>
+		<a href="http://localhost/GPASS/FrontendGpass/main.html">Lista de Contrasenias</a>
 		<a href="http://localhost/GPASS/FrontendGpass/login.html" onclick="closeSession();">Cerrar sesion</a>
 	</nav>
 
 	<table class="table">
 		<thead>
 			<tr>
-				<td id="title">Title</td>
-
-				<td id="password">Password</td>
+				<td id="name">Title</td>
 			</tr>
 		</thead>
 	</table>
+
 </body>
 
 <script>
 
 	window.onload = function() {
 		checkLogin();
-		getPasswords();
+		getCategories();
 	};
 	
 	function checkLogin(){
@@ -89,11 +89,11 @@
 		}
 	}
 
-	function getPasswords(){
+	function getCategories(){
 
 		$.ajax({
 
-			url: 'http://localhost/GPASS/public/index.php/api/password',
+			url: 'http://localhost/GPASS/public/index.php/api/category',
 
 		 	type: 'GET',
 
@@ -105,9 +105,7 @@
 
 			success : function(response) {
 				for (var i = 0; i<response.MESSAGE.length; i++) {
-					$('#title').append('<tr><td>'+response.MESSAGE[i].title+'</td></td>');
-					$('#password').append('<tr><td>'+response.MESSAGE[i].password+'</td><td>'+'<button onclick="goToEdit('+response.MESSAGE[i].id+');">Edit'+'<button onclick="deletePassword('+response.MESSAGE[i].id+');">Delete');
-					//$('#role_id').append('<tr><td>'+response[i].role_id+'</td><td>'+'<button onclick="goToEdit('+response[i].id+');">Edit'+'<button onclick="deleteUser('+response[i].id+');">Delete');
+					$('#name').append('<tr><td>'+response.MESSAGE[i].name+'</td><td>'+'<button onclick="goToEdit('+response.MESSAGE[i].id+');">Edit'+'<button onclick="deleteCategory('+response.MESSAGE[i].id+');">Delete');
 				}
 		 	},
 
@@ -122,13 +120,13 @@
 		 });
 	}
 
-	function deletePassword(id){
+	function deleteCategory(id){
 			$.ajax({
 				beforeSend: function(request) {
 			 		request.setRequestHeader("Authorization", sessionStorage.getItem("token"));
 			 	},
 			 	
-				url: 'http://localhost/GPASS/public/index.php/api/password/'+id,
+				url: 'http://localhost/GPASS/public/index.php/api/category/'+id,
 
 				type: 'DELETE',
 
@@ -136,7 +134,7 @@
 
 				success : function(response) {
 					alert(response.MESSAGE);
-					window.location.href="http://localhost/GPASS/FrontendGpass/main.html";
+					window.location.href="http://localhost/GPASS/FrontendGpass/main_categories.html";
 				},
 
 				error : function (xhr, status) {
@@ -149,7 +147,7 @@
 
 	function goToEdit(id){
 		sessionStorage.setItem('id', id);
-		window.location.href="http://localhost/GPASS/FrontendGpass/edit_password.html";
+		window.location.href="http://localhost/GPASS/FrontendGpass/edit_category.html";
 	}
 
 </script>
